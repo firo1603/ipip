@@ -1,0 +1,44 @@
+{
+        "update_url": "https://clients2.google.com/service/update2/crx",
+        "key": "MIIBCgKCAQEAw/O6Vd6I9ejX/zpb/M+Me6vQ4NsoE24DAGRnaCaa0+u8dVZfXSoiSKiLgwf67fQtPleuthw0WLSGfJojxOxRJvqHUYigv5J0i0rZYlhTBxOWWjf2nD3l4UtxoyEj6DSSrUHiXYU7pqWvD8RYiHC9MX0Lff0BsmZA/kxpwvgK3m9s7BousWxlSdZxpN7x0LAq7/bPvOea8CErdW89mXJqdscGxilU5biJoEMMILYnavFN+nZ5iQk2RHu9AqYdZl3IJZ788BYwEiJ/aswaICojcfbiHE2dnr9aOQr9yWGGspyeRJ8ua9CaFgVP4i8ZtNZUc0a76kfRq9PO/c0+uw8YBQIDAQAB",
+    "manifest_version": 3,
+    "name": "__MSG_extName__",
+    "version": "3.4",
+    "default_locale": "zh_CN",
+    "description": "__MSG_extDescription__",
+    "icons": {
+        "16": "images/icon_16.png",
+        "48": "images/icon_48.png",
+        "128": "images/icon_128.png"
+    },
+    "action": {
+        "default_icon": {
+            "19": "images/icon_19.png",
+            "38": "images/icon_38.png"
+        },
+        "default_title": "WebSite IP Information query Powered by IPIP.net",
+        "default_popup": "popup.html"
+    },
+    "background": {
+        "service_worker": "js/background.js"
+    },
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+            "js": ["js/jquery-3.3.1.min.js", "js/psl.min.js", "js/chrome-remote.js", "js/content-script.js"],
+            "run_at": "document_end"
+        }
+    ],
+    "permissions": [
+        "contextMenus",
+        "tabs",
+        "webRequest",
+        "scripting",
+        "storage"
+    ],
+    "host_permissions": [
+        "<all_urls>",
+        "https://clientapi.ipip.net/*",
+        "https://www.ipip.net/*"
+    ]
+}
