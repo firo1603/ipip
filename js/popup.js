@@ -63,22 +63,22 @@ var refreshClientIP = function() {
     if (year < 2019) {
         year = 2019;
     }
-    T('since_year').innerHTML = year;
+    T('since_year').textContent = year;
     ajaxGet('https://clientapi.ipip.net/browser/myip', function(info) {
         if (info.ret === 0) {
-            T('client_ip').innerHTML = info.data.client_ip + ' ' + info.data.location;
+            T('client_ip').textContent = info.data.client_ip + ' ' + info.data.location;
         } else {
-            T('client_ip').innerHTML = info.msg;
+            T('client_ip').textContent = info.msg;
         }
     });
 };
 
 var render = function(info) {
-    T('show_ip').innerHTML = info.ip;
-    T('location').innerHTML = info.country + " " + info.province + " " + info.city;
-    T('isp').innerHTML = info.isp;
-    T('asn').innerHTML = info.asn.join("<br/>");
-    T('ports').innerHTML = info.ports.join(" ");
+    T('show_ip').textContent = info.ip;
+    T('location').textContent = info.country + " " + info.province + " " + info.city;
+    T('isp').textContent = info.isp;
+    T('asn').textContent = info.asn.join(', ');
+    T('ports').textContent = info.ports.join(' ');
 };
 
 var updateDnsPanel = function(activeIp, dnsList) {
@@ -94,7 +94,14 @@ var updateDnsPanel = function(activeIp, dnsList) {
                 isv6 = true;
             }
             if (item.ip !== activeIp) {
-                dnsContainer.append('<dd><span>' + item.ip + '<span><span class="arrows glyphicon glyphicon-triangle-right"></span></dd>');
+                var dd = document.createElement('dd');
+                var spanIp = document.createElement('span');
+                spanIp.textContent = item.ip;
+                var arrow = document.createElement('span');
+                arrow.className = 'arrows glyphicon glyphicon-triangle-right';
+                dd.appendChild(spanIp);
+                dd.appendChild(arrow);
+                dnsContainer.append(dd);
             }
         });
     }
@@ -131,11 +138,11 @@ var refresh = async function() {
 
         if (state.ip) {
             queryIp = state.ip;
-            T('browser_dns_ip').innerHTML = queryIp;
+            T('browser_dns_ip').textContent = queryIp;
         }
         if (state.domain) {
             queryDomain = state.domain;
-            T('domain').innerHTML = state.domain;
+            T('domain').textContent = state.domain;
         }
 
         if (queryIp && queryDomain) {
@@ -217,7 +224,7 @@ var init = function() {
     });
 
     T('to_ipip').onclick = function() {
-        var fip = $('#show_ip').html();
+        var fip = $('#show_ip').text();
         chrome.tabs.create({
             url: 'https://www.ipip.net/ip/' + fip + '.html',
             selected: false
@@ -239,13 +246,6 @@ var init = function() {
         });
     });
 
-    new Fingerprint2().get(function(result, components) {
-        $.post('https://www.ipip.net/fingerprint.php', {
-            hash: result,
-            components: components
-        });
-    });
-
     domain_view();
 
     new ClipboardJS('#copy');
@@ -254,18 +254,23 @@ var init = function() {
 function domain_view() {
     $('#domain_num').text(domainListCache.length);
     var ds = [];
-    var dhtml = [];
     var sorted = domainListCache.slice().sort(function(a, b) {
         return b.amount - a.amount;
     });
+    var wrapper = document.createElement('div');
     sorted.forEach(function(v) {
         ds.push(v.domain);
-        dhtml.push('<dl class="dsl">');
-        dhtml.push('<dt>' + v.domain + '</dt>');
-        dhtml.push('<dd>' + v.amount + '</dd>');
-        dhtml.push('</dl>');
+        var dl = document.createElement('dl');
+        dl.className = 'dsl';
+        var dt = document.createElement('dt');
+        dt.textContent = v.domain;
+        var dd = document.createElement('dd');
+        dd.textContent = v.amount;
+        dl.appendChild(dt);
+        dl.appendChild(dd);
+        wrapper.appendChild(dl);
     });
-    $('#domains').html('<div>' + dhtml.join('') + '</div>');
+    $('#domains').empty().append(wrapper);
     $('#copy').attr('data-clipboard-text', ds.join('\n'));
 }
 

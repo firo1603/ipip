@@ -113,7 +113,7 @@ chrome.webRequest.onCompleted.addListener((details) => {
 
 	fetchIpInfo(details.tabId, details.ip, domain);
 }, {
-	urls: ['<all_urls>'],
+	urls: ['http://*/*', 'https://*/*'],
 	types: ['main_frame']
 });
 
@@ -157,10 +157,6 @@ chrome.tabs.onActivated.addListener(({ tabId }) => {
 	}
 });
 
-chrome.action.onClicked.addListener(() => {
-	chrome.action.setPopup({ popup: 'popup.html' }, ignoreLastError);
-});
-
 const IP_REGEXP = /^([0-9]|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.([0-9]|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.([0-9]|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.([0-9]|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])$/;
 const IP6_REGEXP = /^[\w:\.]+$/;
 
@@ -182,7 +178,9 @@ const handleSelection = (info, tab) => {
 	}
 
 	const text = info.selectionText || '';
-	if (!IP_REGEXP.test(text) && IP6_REGEXP.test(text)) {
+	const isIPv4 = IP_REGEXP.test(text);
+	const isIPv6 = IP6_REGEXP.test(text);
+	if (!isIPv4 && !isIPv6) {
 		showAlertInTab(tab.id, invalidSelectionMessage);
 		return;
 	}
@@ -202,7 +200,6 @@ chrome.runtime.onInstalled.addListener(() => {
 			title: contextTitle
 		}, ignoreLastError);
 	});
-	chrome.action.setPopup({ popup: 'popup.html' }, ignoreLastError);
 });
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {

@@ -1,3 +1,11 @@
+if (window !== window.top) {
+    return;
+}
+
+if (!/^https?:/.test(location.protocol)) {
+    return;
+}
+
 var domains = {};
 
 $('img').each(function(k, v){
